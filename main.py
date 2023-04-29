@@ -63,7 +63,7 @@ model_fit = newArima.fitModel()
     #Vérifions la qualité de notre modèle à l'aide des résidus
     #Si le modèle est bon, les résidus devraient ressembler à du bruit.
 """
-#residus = newArima.getResidus(model_fit)
+#residus = newArima.getResidus()
 
 
 """
@@ -76,14 +76,10 @@ model_fit = newArima.fitModel()
     Nous sommes donc prêts à faire nos prédictions
     Autrement dit, faisons le forecast
 """
-newArima.forecastTest(model_fit)
+newArima.forecastTest()
 
 
 """
-import pmdarima as pm
-auto_arima = pm.auto_arima(df_train, stepwise=False, seasonal=True)
-forecast_test_auto = auto_arima.predict(n_periods=len(df_test))
-df_log['forecast_auto'] = [None]*len(df_train) + list(forecast_test_auto)
-df_log.plot()
-plt.show()
+La prédiction grâce à la recherche automatique de paramètres
 """
+newArima.forecastAuto()
