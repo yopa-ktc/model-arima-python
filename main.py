@@ -1,72 +1,54 @@
 import pandas as pd
-import numpy as np
 from model_prepare import ModelPrepare
+from arima_model import ArimaModel
 
 df = pd.read_csv('website_data.csv')
 
-
 newModelPrepare = ModelPrepare(df)
 
-newModelPrepare.visualisation()
-#Utiliser le logarithme sur les éléments du data pour normaliser les données
-df_log = np.log(df)
-#df_log.plot()
-#plt.show()
+#________________________________________
+
+#newModelPrepare.visualisation()
 
 
-msk = (df.index < len(df)-30)
-df_train = df_log[msk].copy()
-df_test = df_log[~msk].copy()
+df_log = newModelPrepare.normalisation()
 
 
-#Checker la stationnarité
-#Nous traçons la courbe et nous l'observons
-#Si c'est plus difficile, nous traçons ACF ou PACF
-
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-#acf_original = plot_acf(df_train)
-#pacf_original = plot_pacf(df_train)
-
-
-#VERIFICATION AVEC ADF
-from statsmodels.tsa.stattools import adfuller
-#adf_test = adfuller(df_train)
-#print(f'p-value: {adf_test[1]}')
-#Le test donne une valeur différente de 0 ce qui signifie
-#que l'hypothèse de la non stationnarité est confirmée.
-
-#----------
-
-#Transformons notre série chronologique en série stationnaire
-#Utilisons la fonction dropna()
-df_train_diff = df_train.diff().dropna()
-#df_train_diff.plot()
-#Retraçons les ACF et PACF
-#acf_diff = plot_acf(df_train_diff)
-#pacf_diff = plot_pacf(df_train_diff)
-#Recalculons l'ADF 
-adf_test_diff = adfuller(df_train_diff)
-#print(f'p-value: {adf_test_diff[1]}')
-#plt.show()
+df_train, df_test = newModelPrepare.decoupage(df_log)
 
 """
-#___La p-value se rapproche encore plus de 0 ce qui
-#signifie bien que notre modèle peut bien être stationnaire
-#On peut laisser penser qu'à la 2e itération de différence,
-#La stationnarité pourra encore s'améliorer
-#_______________
+Checker la stationnarité
+Nous traçons la courbe et nous l'observons
+Si c'est plus difficile, nous traçons ACF ou PACF
+"""
+#acf_original, pacf_original = newModelPrepare.showACF(df_train)
 
-#On peut à présent déterminer le modèle ARIMA
-#_____Les paramètres P et Q
-#_____Le modèle (2,1,0)
+"""
+VERIFICATION AVEC ADF
+Le test donne une valeur différente de 0 ce qui signifie
+que l'hypothèse de la non stationnarité est confirmée.
+"""
+newModelPrepare.showADF(df_train)
+
+"""
+Transformons notre série chronologique en série stationnaire
+Utilisons la fonction dropna()
+"""
 
 
-from statsmodels.tsa.arima.model import ARIMA
-model = ARIMA(df_train, order=(2,1,0))
-#Entrainons notre modèle
-model_fit = model.fit()
-#print(model_fit.summary())
+"""
+   La p-value se rapproche encore plus de 0 ce qui
+signifie bien que notre modèle peut bien être stationnaire
+On peut laisser penser qu'à la 2e itération de différence,
+La stationnarité pourra encore s'améliorer
 
+On peut à présent déterminer le modèle ARIMA
+Les paramètres P et Q
+Le modèle (2,1,0)
+"""
+newArima = ArimaModel(df_train)
+
+"""
 #Vérifions la qualité de notre modèle à l'aide des résidus
 #Si le modèle est bon, les résidus devraient ressembler à du bruit.
 
