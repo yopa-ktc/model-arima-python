@@ -1,5 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 from model_prepare import ModelPrepare
 
@@ -8,7 +7,7 @@ df = pd.read_csv('website_data.csv')
 
 newModelPrepare = ModelPrepare(df)
 
-newModelPrepare.visualition()
+newModelPrepare.visualisation()
 #Utiliser le logarithme sur les éléments du data pour normaliser les données
 df_log = np.log(df)
 #df_log.plot()
